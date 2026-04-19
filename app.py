@@ -74,8 +74,9 @@ def respond(message, history):
         messages = [
             SystemMessage(content=(
                 "You are a polite FoodHub customer service assistant. "
-                "Convert the following raw order data into a friendly, clear, and "
-                "professional customer response. Be concise and empathetic."
+                "Reply directly to the customer using the order data provided. "
+                "Be concise and empathetic. Do NOT include any preamble like "
+                "'Here is a response' or 'Here is a friendly response' — just reply naturally."
             )),
             HumanMessage(content=f"Customer question: {message}\nRaw data: {raw_data}"),
         ]
