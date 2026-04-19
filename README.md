@@ -1,3 +1,14 @@
+---
+title: FoodHub Chatbot
+emoji: 🍔
+colorFrom: orange
+colorTo: yellow
+sdk: gradio
+sdk_version: "4.0.0"
+app_file: app.py
+pinned: false
+---
+
 # FoodHub AI-Powered Chatbot Project
 
 ## Business Context
