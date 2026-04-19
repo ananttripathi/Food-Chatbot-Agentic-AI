@@ -1,7 +1,7 @@
 ---
 title: FoodHub Chatbot
 emoji: 🍔
-colorFrom: orange
+colorFrom: red
 colorTo: yellow
 sdk: gradio
 sdk_version: "4.0.0"
