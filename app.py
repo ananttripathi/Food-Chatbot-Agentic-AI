@@ -8,7 +8,7 @@ from langchain_core.messages import HumanMessage, SystemMessage
 
 # --- LLM Setup ---
 llm = ChatGroq(
-    model="llama-3.1-8b-instant",
+    model="gemma2-9b-it",
     temperature=0,
     groq_api_key=os.environ.get("GROQ_API_KEY"),
 )
@@ -20,6 +20,7 @@ sql_agent = create_sql_agent(
     db=db,
     verbose=False,
     handle_parsing_errors=True,
+    max_iterations=3,
 )
 
 # --- Guardrails ---
