@@ -6,4 +6,3 @@ groq>=0.4
 pandas>=1.5
 sqlalchemy>=2.0
 python-dotenv>=1.0
-gradio>=5.0
