@@ -8,7 +8,7 @@ from langchain_core.messages import HumanMessage, SystemMessage
 
 # --- LLM Setup ---
 llm = ChatGroq(
-    model="llama3-8b-8192",
+    model="llama-3.1-8b-instant",
     temperature=0,
     groq_api_key=os.environ.get("GROQ_API_KEY"),
 )
@@ -81,7 +81,10 @@ def respond(message, history):
         return llm.invoke(messages).content
 
     except Exception as e:
-        return f"DEBUG ERROR: {type(e).__name__}: {e}"
+        return (
+            "I apologize, I'm experiencing a technical issue. "
+            "Please try again or contact support@foodhub.com."
+        )
 
 
 # --- Gradio UI ---
