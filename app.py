@@ -8,7 +8,7 @@ from langchain_core.messages import HumanMessage, SystemMessage
 
 # --- LLM Setup ---
 llm = ChatGroq(
-    model="gemma2-9b-it",
+    model="meta-llama/llama-4-scout-17b-16e-instruct",
     temperature=0,
     groq_api_key=os.environ.get("GROQ_API_KEY"),
 )
