@@ -105,9 +105,8 @@ demo = gr.ChatInterface(
         "I want to cancel my order O12487",
         "What items are in order O12488?",
     ],
-    type="messages",
-    theme=gr.themes.Soft(),
 )
+
 
 if __name__ == "__main__":
     demo.launch()
