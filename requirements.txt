@@ -1,7 +1,7 @@
 langchain>=0.1
-langchain-openai>=0.0.5
+langchain-groq>=0.1
 langchain-community>=0.0.10
-openai>=1.0
+groq>=0.4
 pandas>=1.5
 sqlalchemy>=2.0
 python-dotenv>=1.0

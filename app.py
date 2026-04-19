@@ -1,7 +1,7 @@
 import os
 import re
 import gradio as gr
-from langchain_openai import ChatOpenAI
+from langchain_groq import ChatGroq
 from langchain_community.utilities import SQLDatabase
 from langchain_community.agent_toolkits import create_sql_agent
 from langchain.agents import AgentType, initialize_agent, Tool
@@ -9,10 +9,10 @@ from langchain.memory import ConversationBufferMemory
 from langchain.schema import HumanMessage, SystemMessage
 
 # --- LLM Setup ---
-llm = ChatOpenAI(
-    model="gpt-3.5-turbo",
+llm = ChatGroq(
+    model="llama3-8b-8192",
     temperature=0,
-    openai_api_key=os.environ.get("OPENAI_API_KEY"),
+    groq_api_key=os.environ.get("GROQ_API_KEY"),
 )
 
 # --- Database ---
