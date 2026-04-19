@@ -1,15 +1,8 @@
-# FoodHub AI-Powered Chatbot (Agentic AI)
-# Python 3.10+ recommended.
-
 langchain>=0.1
 langchain-openai>=0.0.5
-langchain-anthropic>=0.0.1
 langchain-community>=0.0.10
-
 openai>=1.0
-anthropic>=0.18
-
 pandas>=1.5
 sqlalchemy>=2.0
-
 python-dotenv>=1.0
+gradio>=4.0
