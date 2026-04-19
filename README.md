@@ -78,15 +78,44 @@ The dataset is sourced from the company's order management database and contains
 | **Actionable Insights and Recommendations** | - Key takeaways for the business | 4 |
 | **Business Report Quality** | - Adhere to the business report checklist | 6 |
 
-## Important Setup Note
+## 🚀 Live Demo
 
-**Please set the runtime to T4-GPU in Google Colab:**
+**[▶ Try the app on Hugging Face Spaces](https://huggingface.co/spaces/ananttripathiak/foodhub-chatbot)**
 
-1. Click on "**Runtime**" in the menu bar
-2. Select "**Change runtime type**" from the dropdown menu
-3. In the "**Hardware accelerator**" section, choose "**GPU**"
-4. You may see multiple GPU options; choose "**GPU**" if you specifically want a T4 GPU
-5. After selecting the GPU option, click on the "**Save**" button
+---
+
+## 🤖 Model & Stack
+
+| Component | Details |
+|-----------|---------|
+| **LLM** | `meta-llama/llama-4-scout-17b-16e-instruct` via Groq |
+| **LLM Framework** | LangChain 0.3+ (`langchain-community`, `langchain-core`) |
+| **SQL Agent** | `create_sql_agent` — queries `customer_orders.db` (SQLite) |
+| **Inference API** | [Groq](https://console.groq.com) (free tier, high-speed) |
+| **Frontend** | Gradio 6.12 (`ChatInterface`) |
+| **Deployment** | Hugging Face Spaces (CPU Basic) |
+| **CI/CD** | GitHub Actions → git push to HF Space on every merge to `main` |
+
+### Architecture
+
+```
+User message
+    │
+    ▼
+Guardrails check  ──── blocked/escalate ──→ fixed response
+    │ safe
+    ▼
+SQL Agent (LangChain + Groq LLM)
+    │  queries customer_orders.db
+    ▼
+Raw order data
+    │
+    ▼
+LLM formatter (Groq LLM)
+    │  turns raw data into friendly reply
+    ▼
+Customer response
+```
 
 ---
 
@@ -94,12 +123,14 @@ The dataset is sourced from the company's order management database and contains
 
 ```
 Food-Chatbot-Agentic-AI/
+├── app.py                # Gradio app — guardrails, SQL agent, LLM formatter
+├── foodhub_chatbot.ipynb # Notebook with step-by-step implementation
+├── customer_orders.db    # SQLite order database
+├── requirements.txt      # Python dependencies
+├── .github/workflows/
+│   └── deploy-hf.yml     # CI/CD: auto-deploy to HF Space on push to main
 ├── README.md
-├── LICENSE
-├── CONTRIBUTING.md
-├── requirements.txt
-├── customer_orders.db    # Order DB for SQL agent (see Data Description)
-└── (notebooks / src)     # Add per evaluation rubric (LLM, SQL agent, chat agent, chatbot)
+└── LICENSE
 ```
 
 ## Installation
@@ -110,19 +141,26 @@ cd Food-Chatbot-Agentic-AI
 pip install -r requirements.txt
 ```
 
-Set `OPENAI_API_KEY` or `ANTHROPIC_API_KEY` in your environment (or `.env`). Use `customer_orders.db` as the SQLite database for the SQL agent. For **Google Colab**, set runtime to **T4 GPU** (Runtime → Change runtime type → GPU → Save).
+Set your Groq API key (get one free at [console.groq.com](https://console.groq.com)):
 
-## Usage
+```bash
+export GROQ_API_KEY="your_groq_api_key"
+```
 
-Implement the chatbot per the [Evaluation Rubrics](#evaluation-rubrics): LLM setup → SQL agent (over `customer_orders.db`) → Order Query Tool + Answer Tool → Chat agent → interactive loop. Use LangChain with OpenAI or Anthropic. See [CONTRIBUTING.md](CONTRIBUTING.md) for run instructions.
+Then run locally:
+
+```bash
+python app.py
+```
 
 ## Technologies Used
 
-- Python 3.10+
-- **LangChain** (SQL agent, tools, chat agent)
-- **OpenAI GPT** / **Anthropic Claude**
-- **SQLite** (`customer_orders.db`), Pandas
-- Google Colab (T4 GPU optional)
+- **Python 3.10+**
+- **LangChain 0.3+** — SQL agent, LLM chains
+- **Groq** — fast LLM inference (`meta-llama/llama-4-scout-17b-16e-instruct`)
+- **SQLite** — `customer_orders.db` order database
+- **Gradio 6.12** — chat UI
+- **GitHub Actions** — CI/CD pipeline to Hugging Face Spaces
 
 ---
 
