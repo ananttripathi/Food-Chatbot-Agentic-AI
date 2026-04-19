@@ -18,7 +18,7 @@ jobs:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
           mkdir hf-deploy
-          cp app.py requirements.txt customer_orders.db hf-deploy/
+          cp app.py requirements.txt customer_orders.db foodhub_chatbot.ipynb hf-deploy/
           cat > hf-deploy/README.md << 'EOF'
 ---
 title: FoodHub Chatbot
