@@ -4,8 +4,9 @@ import gradio as gr
 from langchain_groq import ChatGroq
 from langchain_community.utilities import SQLDatabase
 from langchain_community.agent_toolkits import create_sql_agent
-from langchain.agents import AgentType, initialize_agent, Tool
-from langchain.memory import ConversationBufferMemory
+from langchain.agents import AgentExecutor, create_react_agent
+from langchain_core.tools import Tool
+from langchain_core.prompts import PromptTemplate
 from langchain.schema import HumanMessage, SystemMessage
 
 # --- LLM Setup ---
@@ -20,7 +21,6 @@ db = SQLDatabase.from_uri("sqlite:///customer_orders.db")
 sql_agent = create_sql_agent(
     llm=llm,
     db=db,
-    agent_type=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
     verbose=False,
     handle_parsing_errors=True,
 )
@@ -83,33 +83,61 @@ def answer_tool(raw_data: str) -> str:
 
 
 tools = [
-    Tool(name="OrderQueryTool", func=order_query_tool,
-         description="Fetches order details from the database using natural language."),
-    Tool(name="AnswerTool", func=answer_tool,
-         description="Converts raw order data into a polite customer-friendly response."),
+    Tool(
+        name="OrderQueryTool",
+        func=order_query_tool,
+        description="Fetches order details from the database using natural language.",
+    ),
+    Tool(
+        name="AnswerTool",
+        func=answer_tool,
+        description="Converts raw order data into a polite customer-friendly response.",
+    ),
 ]
 
-memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
+# --- React Agent ---
+react_prompt = PromptTemplate.from_template(
+    "You are a helpful FoodHub customer service assistant.\n\n"
+    "You have access to the following tools:\n{tools}\n\n"
+    "Use this format:\n"
+    "Question: the input question\n"
+    "Thought: think about what to do\n"
+    "Action: one of [{tool_names}]\n"
+    "Action Input: the input to the action\n"
+    "Observation: the result\n"
+    "... (repeat Thought/Action/Observation as needed)\n"
+    "Thought: I now know the final answer\n"
+    "Final Answer: the final answer\n\n"
+    "Previous conversation:\n{chat_history}\n\n"
+    "Question: {input}\n{agent_scratchpad}"
+)
 
-chat_agent = initialize_agent(
+agent = create_react_agent(llm, tools, react_prompt)
+agent_executor = AgentExecutor(
+    agent=agent,
     tools=tools,
-    llm=llm,
-    agent=AgentType.CHAT_CONVERSATIONAL_REACT_DESCRIPTION,
-    memory=memory,
-    verbose=False,
     handle_parsing_errors=True,
+    verbose=False,
 )
 
 
 # --- Chatbot Function ---
 def respond(message, history):
     is_safe, reason = check_guardrails(message)
-
     if not is_safe:
         return ESCALATION_RESPONSE if reason == "escalate" else BLOCKED_RESPONSE
 
+    chat_history = ""
+    for turn in history:
+        if isinstance(turn, dict):
+            role = turn.get("role", "")
+            content = turn.get("content", "")
+            chat_history += f"{role.capitalize()}: {content}\n"
+        else:
+            chat_history += f"Human: {turn[0]}\nAssistant: {turn[1]}\n"
+
     try:
-        result = chat_agent.invoke({"input": message})
+        result = agent_executor.invoke({"input": message, "chat_history": chat_history})
         return result["output"]
     except Exception:
         return (
@@ -136,6 +164,7 @@ demo = gr.ChatInterface(
         "I want to cancel my order O12487",
         "What items are in order O12488?",
     ],
+    type="messages",
     theme=gr.themes.Soft(),
 )
 
