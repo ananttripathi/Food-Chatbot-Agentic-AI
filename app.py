@@ -81,10 +81,7 @@ def respond(message, history):
         return llm.invoke(messages).content
 
     except Exception as e:
-        return (
-            "I apologize, I'm experiencing a technical issue. "
-            "Please try again or contact support@foodhub.com."
-        )
+        return f"DEBUG ERROR: {type(e).__name__}: {e}"
 
 
 # --- Gradio UI ---
