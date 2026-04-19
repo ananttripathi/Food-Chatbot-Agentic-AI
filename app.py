@@ -20,7 +20,7 @@ sql_agent = create_sql_agent(
     db=db,
     verbose=False,
     handle_parsing_errors=True,
-    max_iterations=3,
+    max_iterations=6,
 )
 
 # --- Guardrails ---
