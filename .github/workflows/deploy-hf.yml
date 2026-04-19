@@ -9,37 +9,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          lfs: true
 
-      - name: Install huggingface_hub
-        run: pip install huggingface_hub
-
-      - name: Push to Hugging Face
+      - name: Push to Hugging Face Space
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          mkdir hf-deploy
-          cp app.py requirements.txt customer_orders.db foodhub_chatbot.ipynb hf-deploy/
-          cat > hf-deploy/README.md << 'EOF'
----
-title: FoodHub Chatbot
-emoji: 🍔
-colorFrom: orange
-colorTo: yellow
-sdk: gradio
-sdk_version: "4.0.0"
-app_file: app.py
-pinned: false
----
-EOF
-          python - << 'PYEOF'
-import os
-from huggingface_hub import HfApi
-
-api = HfApi(token=os.environ["HF_TOKEN"])
-api.upload_folder(
-    folder_path="hf-deploy",
-    repo_id="ananttripathiak/foodhub-chatbot",
-    repo_type="space",
-)
-print("Upload complete!")
-PYEOF
+          git config user.email "ananttripathiak@gmail.com"
+          git config user.name "ananttripathi"
+          git remote add space https://ananttripathiak:${HF_TOKEN}@huggingface.co/spaces/ananttripathiak/foodhub-chatbot
+          git push space main --force
